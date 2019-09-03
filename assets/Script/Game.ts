@@ -168,12 +168,14 @@ export default class Game extends cc.Component {
             }
         }
         if(this.hero.y <= - this.node.height / 2 || this.hero.y >= this.node.height / 2) {
+            this.node.off("touchstart",this.moveHero.bind(this));
             // 游戏结束
             this.gameOver = true;
             // 暂停游戏
             cc.director.pause();
             this.mask.active = true;
             this.againBtn.active = true;
+            
         }
     }
     public onDestroy(): void {

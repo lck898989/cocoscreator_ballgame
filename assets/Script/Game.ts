@@ -14,16 +14,57 @@ export default class Game extends cc.Component {
         type: [cc.Prefab]
     })
     barrierPrefabArr: cc.Prefab[] = [];
+    @property({
+        type: cc.Node
+    })
+    mask: cc.Node = null;
+    // 再来一次按钮
+    @property({
+        type: cc.Node
+    })
+    againBtn: cc.Node = null;
+    // 背景音效
+    @property({
+        type: cc.AudioClip
+    })
+    backAudio: cc.AudioClip = null;
+    // 点击音效
+    @property({
+        type: cc.AudioClip
+    })
+    clickAudio: cc.AudioClip = null;
+    // 游戏玩法指引龙骨动画
+    @property({
+        type: dragonBones.ArmatureDisplay
+    })
+    guideDragonNode: dragonBones.ArmatureDisplay;
+
     nodePool: cc.NodePool;
     barrierArr: cc.Node[] = [];
 
     public gameOver: boolean = false;
     onLoad() {
+
+        // 播放背景音乐
+        if(this.backAudio) {
+            cc.audioEngine.play(this.backAudio,false,1);
+        }
+        // 播放龙骨动画
+        this.guideDragonNode.getComponent(dragonBones.ArmatureDisplay).playAnimation("hand2",4);
+        this.guideDragonNode.addEventListener(dragonBones.EventObject.COMPLETE,this.dragonOver.bind(this))
+
+        this.mask.active = false;
+        this.againBtn.active = false;
         // 背景适配
         let minScale = Math.min(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
         this.back.scale = minScale;
         let maxScale = Math.max(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
         this.back.scale = maxScale;
+        this.node.on("touchstart",this.moveHero.bind(this));
+    }
+    // 龙骨动画播放完成
+    private dragonOver(): void {
+        this.guideDragonNode.node.active = false;
     }
     // 移动主角
     public moveHero(event: cc.Touch): void {  
@@ -31,10 +72,13 @@ export default class Game extends cc.Component {
         // 转换为节点坐标系
         let localLocation = this.node.convertToNodeSpaceAR(location);
         console.log("locallocation is ",localLocation);
-        let controllPoint: cc.Vec2 =cc.v2((this.hero.getPosition().x + localLocation.x) / 2,(this.hero.getPosition().y + localLocation.y) / 2);
-        let bezierArr = [this.hero.getPosition(),controllPoint,localLocation];
-        let action = cc.bezierTo(0.5,bezierArr);
-        this.hero.runAction(action);
+        if(localLocation.x >= 0 && localLocation.x <= 360) {
+            // 向右运动
+            this.hero.getComponent("Hero").goRun(2);
+        } else {
+            // 向左运动
+            this.hero.getComponent("Hero").goRun(1);
+        }
     }
     start () {
         // init logic
@@ -104,18 +148,17 @@ export default class Game extends cc.Component {
         node.parent = this.node;
         node.x = nodexArr[xIndex];
     }
-    // 按钮事件
-    btn(event,data) {
-        switch(data) {
-            case "l":
-                // 向左移动开启物理组件
-                this.hero.getComponent("Hero").goRun(1);
-            break;
-            case "r":
-                this.hero.getComponent("Hero").goRun(2);
-            break;
+    // 再来一次
+    again(): void {
+        if(cc.director.isPaused) {
+            cc.director.resume();
+            // 恢复游戏
+            // cc.director.loadScene("main");
+            this.mask.active = false;
+            this.againBtn.active = false;
+            cc.game.restart();
+            
         }
-    
     }
     update(dt: number) {
         if(this.back) {
@@ -127,9 +170,13 @@ export default class Game extends cc.Component {
         if(this.hero.y <= - this.node.height / 2 || this.hero.y >= this.node.height / 2) {
             // 游戏结束
             this.gameOver = true;
+            // 暂停游戏
+            cc.director.pause();
+            this.mask.active = true;
+            this.againBtn.active = true;
         }
     }
     public onDestroy(): void {
-        // this.node.off("touchstart",this.moveHero.bind(this));
+        this.node.off("touchstart",this.moveHero.bind(this));
     }
 }

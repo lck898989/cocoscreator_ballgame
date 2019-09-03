@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "d5cb3797-9558-4e2f-9382-6931ade722c9",
+  "atlasJson": "{\"imagePath\":\"hand_anim_tex.png\",\"SubTexture\":[{\"x\":131,\"y\":107,\"width\":99,\"name\":\"handguang\",\"height\":102},{\"x\":1,\"y\":1,\"width\":128,\"name\":\"guangban_202\",\"height\":128},{\"x\":175,\"y\":211,\"width\":42,\"name\":\"xx\",\"height\":44},{\"height\":33,\"y\":211,\"frameWidth\":173,\"frameX\":0,\"frameHeight\":34,\"frameY\":-1,\"width\":172,\"name\":\"tw\",\"x\":1},{\"height\":104,\"y\":1,\"frameWidth\":105,\"frameX\":0,\"frameHeight\":105,\"frameY\":-1,\"width\":105,\"name\":\"shou\",\"x\":131}],\"name\":\"hand_anim\"}",
+  "texture": "8f1d81d6-8faf-4783-863e-39899ad8341b",
+  "subMetas": {}
+}

@@ -21,7 +21,7 @@ export default class Hero extends cc.Component {
     private crashBarrier: boolean = false;
     // 与之碰撞的物体节点
     private otherNode: cc.Node = null;
-    // 
+    // 匀减速直线运动的
 
     onLoad () {
         // 开启物理系统
@@ -68,12 +68,13 @@ export default class Hero extends cc.Component {
             if(this.otherNode) {
                 this.followOther(this.otherNode);
             }
+            // 控制左右移动
             switch(this.direction) {
                 case 1:
-                    this.node.x -= (this.speed + 1000) * dt;
+                    this.node.x -= (this.speed * 0.5) * dt;
                 break;
                 case 2:
-                    this.node.x += (this.speed + 1000) * dt;
+                    this.node.x += (this.speed * 0.5) * dt;
                 break;  
             }
         }
@@ -84,7 +85,7 @@ export default class Hero extends cc.Component {
             this.node.x = -360 + this.node.width / 10;
         }
         // 重置方向
-        this.direction = -1;
+        // this.direction = -1;
     }
     // 节点跟随
     private followOther(other: cc.Node): void {

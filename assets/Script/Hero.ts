@@ -1,12 +1,12 @@
 const {ccclass, property} = cc._decorator;
-
+import Global from "./Global";
 @ccclass
 export default class Hero extends cc.Component {
 
     private targetPoint: cc.Vec2;
     private sourcePoint: cc.Vec2;
     // 水平初速度设置为刚体的水平线速度
-    private speed: number = 300;
+    private speed: number = Global.levelJson[Global.level].heroSpeed;
     // 水平线速度的衰减系数
     private downRate: number = 1;
     private run: boolean = false;
@@ -43,10 +43,6 @@ export default class Hero extends cc.Component {
         // 开启运动
         this.run = true;
         this.direction = direction;
-        // if(this.crashBarrier) {
-        //     let action = cc.moveBy(1,20);
-        //     this.node.runAction(action);
-        // }
     }
     update (dt) {
         if(!this.crashBarrier) {

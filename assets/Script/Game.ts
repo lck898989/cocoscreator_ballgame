@@ -23,11 +23,6 @@ export default class Game extends cc.Component {
         type: cc.Node
     })
     againBtn: cc.Node = null;
-    // 背景音效
-    @property({
-        type: cc.AudioClip
-    })
-    backAudio: cc.AudioClip = null;
     // 点击音效
     @property({
         type: cc.AudioClip
@@ -44,11 +39,6 @@ export default class Game extends cc.Component {
 
     public gameOver: boolean = false;
     onLoad() {
-
-        // 播放背景音乐
-        if(this.backAudio) {
-            cc.audioEngine.play(this.backAudio,false,1);
-        }
         // 播放龙骨动画
         this.guideDragonNode.getComponent(dragonBones.ArmatureDisplay).playAnimation("hand2",4);
         this.guideDragonNode.addEventListener(dragonBones.EventObject.COMPLETE,this.dragonOver.bind(this))
@@ -56,10 +46,10 @@ export default class Game extends cc.Component {
         this.mask.active = false;
         this.againBtn.active = false;
         // 背景适配
-        let minScale = Math.min(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
-        this.back.scale = minScale;
-        let maxScale = Math.max(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
-        this.back.scale = maxScale;
+        // let minScale = Math.min(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
+        // this.back.scale = minScale;
+        // let maxScale = Math.max(this.back.width / cc.view.getCanvasSize().width,this.back.height / cc.view.getCanvasSize().height);
+        // this.back.scale = maxScale;
         this.node.on("touchstart",this.moveHero.bind(this));
     }
     // 龙骨动画播放完成
@@ -101,8 +91,8 @@ export default class Game extends cc.Component {
                     node = cc.instantiate(this.barrierPrefabArr[index]);
                     this.nodePool.put(node);
                 }
-                node.getComponent("Barrier").kill = false;
                 console.log("node is ",node);
+                node.getComponent("Barrier").kill = false;
                 let xIndex: number = this.createRandom(0,nodexArr.length);
                 node.y = -400 * i + 150;
                 this.createBarrier(node,nodexArr,xIndex);
@@ -114,29 +104,30 @@ export default class Game extends cc.Component {
         } else {
             // 找到坐标最小值
             let min: number = this.barrierArr[0].y;
+            
             this.barrierArr.map((value,index,arr) => {
                 let yItem: number = value.y;
                 if(yItem < min) {
                     min = yItem;
                 }
             })
-            console.log("坐标的最小值是：",min);
-            // 在最小值坐标下面添加一个新的障碍物
-            let node = this.nodePool.get();
-            if(!node) {
-                let index: number = this.createRandom(0,2);
-                node = cc.instantiate(this.barrierPrefabArr[index]);
-                this.nodePool.put(node);
-            }
-            node.getComponent("Barrier").kill = false;
-            // 可以动态的设置它的纹理从而控制生成的障碍物有所改变
-            console.log("node is ",node);
-            let xIndex: number = this.createRandom(0,nodexArr.length);
-            node.y = min - 400;
-            this.createBarrier(node,nodexArr,xIndex);
-            // 原数组中没有该节点的时候进行删除
-            if(this.barrierArr.indexOf(node) < 0) {
-                this.barrierArr.push(node);
+            for(let i = 0; i < num; i++) {
+                // 在最小值坐标下面添加一个新的障碍物
+                let node = this.nodePool.get();
+                if(!node) {
+                    let index: number = this.createRandom(0,2);
+                    node = cc.instantiate(this.barrierPrefabArr[index]);
+                    this.nodePool.put(node);
+                }
+                
+                node.getComponent("Barrier").kill = false;
+                // 可以动态的设置它的纹理从而控制生成的障碍物有所改变
+                let xIndex: number = this.createRandom(0,nodexArr.length);
+                node.y = min - 400;
+                this.createBarrier(node,nodexArr,xIndex);
+                if(this.barrierArr.indexOf(node) < 0) {
+                    this.barrierArr.push(node);
+                }
             }
         }
     }  
@@ -145,36 +136,39 @@ export default class Game extends cc.Component {
         return res;
     }
     createBarrier(node: cc.Node,nodexArr: number[],xIndex: number): void {
-        node.parent = this.node;
+        if(!node.parent){
+            node.parent = this.node;
+        }
         node.x = nodexArr[xIndex];
     }
     // 再来一次
     again(): void {
-        if(cc.director.isPaused) {
-            cc.director.resume();
-            // 恢复游戏
-            // cc.director.loadScene("main");
-            this.mask.active = false;
-            this.againBtn.active = false;
-            cc.game.restart();
-            
-        }
+        this.mask.active = false;
+        this.againBtn.active = false;
+        cc.game.restart();
+        // cc.director.runScene("main");
+        cc.director.runSceneImmediate(new cc.Scene("main"));
     }
     update(dt: number) {
-        if(this.back) {
-            this.back.y += dt * 100;
-            if(this.back.y >= 251) {
-                this.back.y = -251;
-            }
-        }
+        // if(this.back) {
+        //     this.back.y += dt * 100;
+        //     if(this.back.y >= 251) {
+        //         this.back.y = -251;
+        //     }
+        // }
         if(this.hero.y <= - this.node.height / 2 || this.hero.y >= this.node.height / 2) {
             this.node.off("touchstart",this.moveHero.bind(this));
             // 游戏结束
             this.gameOver = true;
-            // 暂停游戏
-            cc.director.pause();
+            // // 暂停游戏
+            // cc.director.pause();
+            // 退出游戏
+            // cc.game.end();
             this.mask.active = true;
+            this.mask.zIndex = 100;
             this.againBtn.active = true;
+            this.againBtn.zIndex = 101;
+            cc.game.pause();
             
         }
     }

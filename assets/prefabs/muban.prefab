@@ -69,12 +69,11 @@
       "y": 1,
       "z": 1
     },
-    "_quat": {
-      "__type__": "cc.Quat",
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": 0,
-      "w": 1
+      "z": 0
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -90,7 +89,11 @@
       "__id__": 1
     },
     "_enabled": true,
-    "_materials": [],
+    "_materials": [
+      {
+        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
+      }
+    ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
@@ -156,7 +159,7 @@
     "tag": 0,
     "_density": 1,
     "_sensor": true,
-    "_friction": 0.2,
+    "_friction": 0.30000000000000004,
     "_restitution": 0.6,
     "body": null,
     "_offset": {

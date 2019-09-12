@@ -1,4 +1,5 @@
 import Game from "./Game";
+import Global from "./Global";
 /***
  * 
  * 障碍物所对应的类
@@ -19,9 +20,9 @@ export default class Barrier extends cc.Component {
         // console.log("Game's prototype is ",Game.prototype);
         
     }
-
     update (dt) {
         if(this.node.y > 700 && !this.kill) {
+            console.log("====>>>开始回收节点和生成新的节点");
             // 节点池回收内存
             // 从父节点删除
             this.node.parent.getComponent("Game").createBarrierNodes(1);
@@ -29,7 +30,7 @@ export default class Barrier extends cc.Component {
             // let barrierArr = this.node.parent.getComponent("Game").barrierArr;
             this.kill = true;
         } else {
-            this.node.y += dt * 100;
+            this.node.y += dt * Global.levelJson[Global.level].barrierSpeed;
         }
     }
     /**
